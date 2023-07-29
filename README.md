@@ -12,8 +12,17 @@ With PrivateStatus you can hide the online status of your server from unwanted p
 
 ## Configuration
 
-After the first start of the plugin, a `config.yml` file is created in the folder `plugins/PrivateStatus`. There, the option `expiration-days` can be configured, which determines the maximum length of time an IP address should be stored.
+The configuration is in `plugins/PrivateStatus/config.yml` and looks like this. Please edit only the `expiration-days` option. The `known-addresses` section is managed by the plugin itself. The option `expiration-days` defines how long an address should be kept in the history. This period is only checked when the server is started and thus has no effect if the server is running continuously.
+```yaml
+# The amount of days after which addresses will expire. Minimum: 1.
+expiration-days: 3
 
-## Commands
+# A list of already known addresses.
+known-addresses: {}
+```
 
-There are no commands.
+## More
+
+- [View on GitHub](https://github.com/tinyoverflow/minecraft-privatestatus)
+- [View on Modrinth](https://modrinth.com/plugin/privatestatus)
+- [View on bStats](https://bstats.org/plugin/bukkit/PrivateStatus/19291)
