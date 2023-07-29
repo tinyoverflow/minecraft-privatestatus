@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.InetAddress;
@@ -58,6 +57,10 @@ public class PrivateStatus extends JavaPlugin implements Listener
         if (configurationSection != null) {
             repository.fromMap(configurationSection.getValues(false));
         }
+
+        // Initialize Metrics
+        PrivateStatusMetrics metrics = new PrivateStatusMetrics(this, 19291);
+        metrics.setExpirationDaysMetric(getConfig().getInt(CONFIG_EXPIRATION_DAYS));
     }
 
     @Override
