@@ -32,23 +32,26 @@ public class AddressRepository
         storage.clear();
 
         // Process each and every item inside the section.
-        for (Map.Entry<String, Object> entry : configMap.entrySet()) {
+        for (Map.Entry<String, Object> entry : configMap.entrySet())
+        {
             UUID uuid = UUID.fromString(entry.getKey());
             String encodedAddress = (String) entry.getValue();
 
             // Fire the expiration event to allow other listeners to intercept the expiration logic.
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-            ExpireAddressEvent event = new ExpireAddressEvent(offlinePlayer);
-            if (event.callEvent()) {
+            if (isExpired(offlinePlayer))
+            {
                 logger.info("Skipping expired address for " + uuid);
                 continue;
             }
 
             // Decode the stored address and add it to the repository.
-            try {
+            try
+            {
                 InetAddress inetAddress = InetAddress.getByAddress(Base64.getDecoder().decode(encodedAddress));
                 storage.put(offlinePlayer, inetAddress);
-            } catch (UnknownHostException e) {
+            } catch (UnknownHostException e)
+            {
                 logger.warning("Unknown host found in config. Skipping: " + encodedAddress);
             }
         }
@@ -66,7 +69,8 @@ public class AddressRepository
     {
         Map<String, String> addressList = new HashMap<>();
 
-        for (Map.Entry<OfflinePlayer, InetAddress> entry : storage.entrySet()) {
+        for (Map.Entry<OfflinePlayer, InetAddress> entry : storage.entrySet())
+        {
             UUID uuid = entry.getKey().getUniqueId();
             InetAddress inetAddress = entry.getValue();
 
@@ -96,8 +100,31 @@ public class AddressRepository
     public void add(OfflinePlayer offlinePlayer, InetAddress inetAddress)
     {
         AddAddressEvent event = new AddAddressEvent(offlinePlayer, inetAddress);
-        if (event.callEvent()) {
+        if (event.callEvent())
+        {
             storage.put(offlinePlayer, inetAddress);
         }
+    }
+
+    /**
+     * Triggers the event call to check whether the entry is expired.
+     *
+     * @param offlinePlayer The {@code OfflinePlayer} to check for.
+     * @return {@code true} if the entry is expired, {@code false} otherwise.
+     */
+    public boolean isExpired(OfflinePlayer offlinePlayer)
+    {
+        ExpireAddressEvent event = new ExpireAddressEvent(offlinePlayer);
+        return !event.callEvent();
+    }
+
+    public Set<OfflinePlayer> getPlayers()
+    {
+        return storage.keySet();
+    }
+
+    public void remove(OfflinePlayer player)
+    {
+        storage.remove(player);
     }
 }

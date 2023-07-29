@@ -1,3 +1,4 @@
+#file: noinspection SpellCheckingInspection
 name: Build and Publish
 
 on:
@@ -40,8 +41,31 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Publish to GitHub Release
-        uses: softprops/action-gh-release@v1
+#      - name: Publish to GitHub Release
+#        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          files: target/PrivateStatus*.jar
+
+      - name: Publish to Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          name: ${{ github.ref_name }}
+          version: ${{ github.ref_name }}
+          version-type: release
+          changelog-file: CHANGELOG.md
+
+          loaders: paper
+          game-versions: ">1.20"
+          java: 17
+
           files: target/PrivateStatus*.jar
+
+          github-tag: ${{ github.ref_name }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          modrinth-id: 15lfFvuG
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}

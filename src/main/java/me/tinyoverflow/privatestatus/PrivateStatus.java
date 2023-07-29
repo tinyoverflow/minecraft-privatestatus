@@ -2,6 +2,7 @@ package me.tinyoverflow.privatestatus;
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import me.tinyoverflow.privatestatus.events.ExpireAddressEvent;
+import me.tinyoverflow.privatestatus.jobs.PruneExpiredAddressesJob;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +35,10 @@ public class PrivateStatus extends JavaPlugin implements Listener
         getConfig().options().copyDefaults(true);
 
         getConfig().addDefault(CONFIG_EXPIRATION_DAYS, 3);
-        getConfig().setComments(CONFIG_EXPIRATION_DAYS, List.of("The amount of days after which addresses will expire. Minimum: 1."));
+        getConfig().setComments(
+                CONFIG_EXPIRATION_DAYS,
+                List.of("The amount of days after which addresses will expire. Minimum: 1.")
+        );
 
         getConfig().addDefault(CONFIG_KNOWN_ADDRESSES, new HashMap<String, Object>());
         getConfig().setComments(CONFIG_KNOWN_ADDRESSES, List.of("A list of already known addresses."));
@@ -48,19 +52,29 @@ public class PrivateStatus extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
 
         // Ensure the expiration days setting is at least 1.
-        if (getConfig().getInt(CONFIG_EXPIRATION_DAYS) < 1) {
+        if (getConfig().getInt(CONFIG_EXPIRATION_DAYS) < 1)
+        {
             getConfig().set(CONFIG_EXPIRATION_DAYS, 3);
         }
 
         // Load addresses from configuration file, if the section exists.
         ConfigurationSection configurationSection = getConfig().getConfigurationSection(CONFIG_KNOWN_ADDRESSES);
-        if (configurationSection != null) {
+        if (configurationSection != null)
+        {
             repository.fromMap(configurationSection.getValues(false));
         }
 
         // Initialize Metrics
         PrivateStatusMetrics metrics = new PrivateStatusMetrics(this, 19291);
         metrics.setExpirationDaysMetric(getConfig().getInt(CONFIG_EXPIRATION_DAYS));
+
+        // Run prune job every hour.
+        getServer().getScheduler().scheduleSyncRepeatingTask(
+                this,
+                new PruneExpiredAddressesJob(getLogger(), repository),
+                0,
+                60 * 60 * 20
+        );
     }
 
     @Override
@@ -77,13 +91,15 @@ public class PrivateStatus extends JavaPlugin implements Listener
         Player player = event.getPlayer();
 
         InetSocketAddress socketAddress = player.getAddress();
-        if (socketAddress == null) {
+        if (socketAddress == null)
+        {
             getLogger().log(Level.WARNING, "Could not retrieve IP address of player " + player.getName());
             return;
         }
 
         InetAddress address = socketAddress.getAddress();
-        if (address.isAnyLocalAddress()) {
+        if (address.isAnyLocalAddress())
+        {
             getLogger().log(Level.INFO, "Player " + player.getName() + " joined with local address. Ignoring.");
             return;
         }
@@ -94,7 +110,8 @@ public class PrivateStatus extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerListPingEvent(PaperServerListPingEvent event)
     {
-        if (!repository.hasAddress(event.getAddress())) {
+        if (!repository.hasAddress(event.getAddress()))
+        {
             event.setCancelled(true);
         }
     }
