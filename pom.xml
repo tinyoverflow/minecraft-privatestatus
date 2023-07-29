@@ -101,7 +101,7 @@
         <repository>
             <id>github</id>
             <name>PrivateStatus</name>
-            <url>https://github.com/tinyoverflow/minecraft-privatestatus</url>
+            <url>https://maven.pkg.github.com/tinyoverflow/minecraft-privatestatus</url>
         </repository>
     </distributionManagement>
 </project>
