@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: plugin
-          path: target/PrivateStatus*.jar
+          path: target/privatestatus*.jar
 
       - name: Publish to GitHub Packages Apache Maven
         run: mvn --batch-mode deploy -s $GITHUB_WORKSPACE/settings.xml
@@ -51,10 +51,10 @@ jobs:
           changelog-file: CHANGELOG.md
 
           loaders: paper
-          game-versions: ">1.20"
+          game-versions: ">=1.20"
           java: 17
 
-          files: target/PrivateStatus*.jar
+          files: "target/privatestatus*.jar"
 
           github-tag: ${{ github.ref_name }}
           github-token: ${{ github.token }}
