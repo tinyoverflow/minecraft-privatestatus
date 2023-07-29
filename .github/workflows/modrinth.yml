@@ -1,0 +1,19 @@
+name: Update Modrinth
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "README.md" ]
+
+jobs:
+  description:
+    name: Update Description
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: funnyboy-roks/modrinth-auto-desc@c206516ecf5e24a99f09c0a3aea502bc1033b73c
+        with:
+          auth-token: ${{ secrets.MODRINTH_TOKEN }}
+          slug: 'privatestatus'
