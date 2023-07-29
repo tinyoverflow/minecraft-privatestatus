@@ -1,3 +1,3 @@
-**Added**
+**Fix**
 
-- Automatically remove expired entries every hour.
+- Fix an issue where the expiry check result was inverted

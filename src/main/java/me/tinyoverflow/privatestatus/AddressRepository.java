@@ -115,7 +115,7 @@ public class AddressRepository
     public boolean isExpired(OfflinePlayer offlinePlayer)
     {
         ExpireAddressEvent event = new ExpireAddressEvent(offlinePlayer);
-        return !event.callEvent();
+        return event.callEvent();
     }
 
     public Set<OfflinePlayer> getPlayers()
