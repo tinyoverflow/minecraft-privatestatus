@@ -31,7 +31,8 @@
     </dependencies>
 
     <build>
-        <finalName>${project.name}</finalName>
+        <!--suppress MavenModelInspection -->
+        <finalName>${project.name}-${project.version}-${git.commit.id.describe}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
