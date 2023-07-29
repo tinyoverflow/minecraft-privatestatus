@@ -35,11 +35,11 @@ jobs:
           name: plugin
           path: target/PrivateStatus*.jar
 
-      - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+#      - name: Publish to GitHub Packages Apache Maven
+#        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+#        if: startsWith(github.ref, 'refs/tags/')
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
 
 #      - name: Publish to GitHub Release
 #        uses: softprops/action-gh-release@v1
@@ -47,7 +47,7 @@ jobs:
 #        with:
 #          files: target/PrivateStatus*.jar
 
-      - name: Publish to Modrinth
+      - name: Publish to Distribution Platforms
         uses: Kir-Antipov/mc-publish@v3.3
         if: startsWith(github.ref, 'refs/tags/')
         with:
@@ -63,7 +63,7 @@ jobs:
           files: target/PrivateStatus*.jar
 
           github-tag: ${{ github.ref_name }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
 
           modrinth-id: 15lfFvuG
           modrinth-featured: true
