@@ -1,5 +1,5 @@
 name: PrivateStatus
 description: Hides your server status from unknown players.
-version: "1.0"
+version: "${project.version}-${git.commit.id.describe}"
 api-version: "1.20"
 main: me.tinyoverflow.privatestatus.PrivateStatus
