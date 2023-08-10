@@ -4,12 +4,15 @@ import me.tinyoverflow.privatestatus.events.AddAddressEvent;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
+import javax.sound.sampled.Line;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -55,6 +58,36 @@ public class AddressRepository
     }
 
     /**
+     * Loads known addresses from a {@code List<Map<String, Object>>}.
+     *
+     * @param data List of data.
+     */
+    public void fromList(List<Map<String, Object>> data)
+    {
+        for (Map<String, Object> section : data) {
+            if (section.get("ip") == null || section.get("expiration") == null) {
+                continue;
+            }
+
+            String address = (String) section.get("ip");
+            long expirationTimestamp = ((Integer) section.get("expiration")).longValue();
+
+            try {
+                storage.put(
+                        InetAddress.getByName(address),
+                        LocalDateTime.ofEpochSecond(expirationTimestamp, 0, zoneOffset)
+                );
+            }
+            catch (UnknownHostException e) {
+                logger.warning("Unknown host found in config. Skipping: " + address);
+            }
+        }
+
+        // Notify the user about the loading state.
+        logger.info("Loaded " + storage.size() + " addresses from configuration.");
+    }
+
+    /**
      * Returns the data as a string map.
      *
      * @return The map with the UUID string as the key and the base64 encoded address as the value.
@@ -68,6 +101,24 @@ public class AddressRepository
             LocalDateTime localDateTime = entry.getValue();
 
             addressList.put(inetAddress.getHostAddress(), localDateTime.toEpochSecond(zoneOffset));
+        }
+
+        return addressList;
+    }
+
+    public List<Map<String, Object>> toList()
+    {
+        List<Map<String, Object>> addressList = new ArrayList<>();
+
+        for (Map.Entry<InetAddress, LocalDateTime> entry : storage.entrySet()) {
+            InetAddress inetAddress = entry.getKey();
+            LocalDateTime localDateTime = entry.getValue();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("ip", inetAddress.getHostAddress());
+            data.put("expiration", localDateTime.toEpochSecond(zoneOffset));
+
+            addressList.add(data);
         }
 
         return addressList;
@@ -99,7 +150,7 @@ public class AddressRepository
 
     public Map<InetAddress, LocalDateTime> getAll()
     {
-        return storage;
+        return (Map<InetAddress, LocalDateTime>) storage.clone();
     }
 
     public void remove(InetAddress address)

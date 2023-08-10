@@ -13,8 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 public class PrivateStatus extends JavaPlugin implements Listener
@@ -56,10 +55,12 @@ public class PrivateStatus extends JavaPlugin implements Listener
         }
 
         // Load addresses from configuration file, if the section exists.
-        ConfigurationSection configurationSection = getConfig().getConfigurationSection(CONFIG_KNOWN_ADDRESSES);
-        if (configurationSection != null) {
-            repository.fromMap(configurationSection.getValues(false));
-        }
+        List<?> data = getConfig().getList(CONFIG_KNOWN_ADDRESSES, new ArrayList<>());
+        repository.fromList((List<Map<String, Object>>) data);
+//        ConfigurationSection configurationSection = getConfig().getConfigurationSection(CONFIG_KNOWN_ADDRESSES);
+//        if (configurationSection != null) {
+//            repository.fromMap(configurationSection.getValues(false));
+//        }
 
         // Initialize Metrics
         PrivateStatusMetrics metrics = new PrivateStatusMetrics(this, 19291);
@@ -78,7 +79,7 @@ public class PrivateStatus extends JavaPlugin implements Listener
     public void onDisable()
     {
         // Save configuration to disk.
-        getConfig().set(CONFIG_KNOWN_ADDRESSES, repository.toMap());
+        getConfig().set(CONFIG_KNOWN_ADDRESSES, repository.toList());
         saveConfig();
     }
 
