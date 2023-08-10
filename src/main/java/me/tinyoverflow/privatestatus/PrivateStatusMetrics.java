@@ -7,22 +7,22 @@ import java.util.concurrent.Callable;
 
 public class PrivateStatusMetrics implements Callable<String>
 {
-    private Integer expirationDaysMetric = 0;
+    private Integer expirationMinutesMetric = 0;
 
     public PrivateStatusMetrics(PrivateStatus plugin, int pluginId)
     {
         Metrics metrics = new Metrics(plugin, pluginId);
-        metrics.addCustomChart(new SimplePie("expiration_days", this));
+        metrics.addCustomChart(new SimplePie("expiration_minutes", this));
     }
 
     @Override
     public String call()
     {
-        return expirationDaysMetric.toString();
+        return expirationMinutesMetric.toString();
     }
 
-    public void setExpirationDaysMetric(int expirationDaysMetric)
+    public void setExpirationMinutesMetric(int expirationMinutesMetric)
     {
-        this.expirationDaysMetric = expirationDaysMetric;
+        this.expirationMinutesMetric = expirationMinutesMetric;
     }
 }

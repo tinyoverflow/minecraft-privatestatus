@@ -13,14 +13,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
 public class PrivateStatus extends JavaPlugin implements Listener
 {
-    private final String CONFIG_EXPIRATION_DAYS = "expiration-days";
+    private final String CONFIG_EXPIRATION_MINUTES = "expiration-minutes";
     private final String CONFIG_KNOWN_ADDRESSES = "known-addresses";
 
     private AddressRepository repository;
@@ -34,10 +33,10 @@ public class PrivateStatus extends JavaPlugin implements Listener
         // Set sensible configuration defaults.
         getConfig().options().copyDefaults(true);
 
-        getConfig().addDefault(CONFIG_EXPIRATION_DAYS, 3);
+        getConfig().addDefault(CONFIG_EXPIRATION_MINUTES, 3);
         getConfig().setComments(
-                CONFIG_EXPIRATION_DAYS,
-                List.of("The amount of days after which addresses will expire. Minimum: 1.")
+                CONFIG_EXPIRATION_MINUTES,
+                List.of("The amount of minutes after which addresses will expire. Minimum: 10.")
         );
 
         getConfig().addDefault(CONFIG_KNOWN_ADDRESSES, new HashMap<String, Object>());
@@ -51,24 +50,22 @@ public class PrivateStatus extends JavaPlugin implements Listener
     {
         getServer().getPluginManager().registerEvents(this, this);
 
-        // Ensure the expiration days setting is at least 1.
-        if (getConfig().getInt(CONFIG_EXPIRATION_DAYS) < 1)
-        {
-            getConfig().set(CONFIG_EXPIRATION_DAYS, 3);
+        // Ensure the expiration minutes setting is at least 10.
+        if (getConfig().getInt(CONFIG_EXPIRATION_MINUTES) < 10) {
+            getConfig().set(CONFIG_EXPIRATION_MINUTES, 10);
         }
 
         // Load addresses from configuration file, if the section exists.
         ConfigurationSection configurationSection = getConfig().getConfigurationSection(CONFIG_KNOWN_ADDRESSES);
-        if (configurationSection != null)
-        {
+        if (configurationSection != null) {
             repository.fromMap(configurationSection.getValues(false));
         }
 
         // Initialize Metrics
         PrivateStatusMetrics metrics = new PrivateStatusMetrics(this, 19291);
-        metrics.setExpirationDaysMetric(getConfig().getInt(CONFIG_EXPIRATION_DAYS));
+        metrics.setExpirationMinutesMetric(getConfig().getInt(CONFIG_EXPIRATION_MINUTES));
 
-        // Run prune job every hour.
+        // Run prune job every 10 minutes.
         getServer().getScheduler().scheduleSyncRepeatingTask(
                 this,
                 new PruneExpiredAddressesJob(getLogger(), repository),
@@ -91,28 +88,25 @@ public class PrivateStatus extends JavaPlugin implements Listener
         Player player = event.getPlayer();
 
         InetSocketAddress socketAddress = player.getAddress();
-        if (socketAddress == null)
-        {
+        if (socketAddress == null) {
             getLogger().log(Level.WARNING, "Could not retrieve IP address of player " + player.getName());
             return;
         }
 
         InetAddress address = socketAddress.getAddress();
-        if (address.isAnyLocalAddress())
-        {
+        if (address.isAnyLocalAddress()) {
             getLogger().log(Level.INFO, "Player " + player.getName() + " joined with local address. Ignoring.");
             return;
         }
 
-        LocalDateTime expiration = LocalDateTime.now().plusDays(getConfig().getInt(CONFIG_EXPIRATION_DAYS));
+        LocalDateTime expiration = LocalDateTime.now().plusMinutes(getConfig().getInt(CONFIG_EXPIRATION_MINUTES));
         repository.add(player, address, expiration);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerListPingEvent(PaperServerListPingEvent event)
     {
-        if (!repository.hasAddress(event.getAddress()))
-        {
+        if (!repository.hasAddress(event.getAddress())) {
             event.setCancelled(true);
         }
     }

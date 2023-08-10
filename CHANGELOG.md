@@ -4,6 +4,8 @@ Please delete your `config.yml` when updating to this version.
 **Changes**
 
  - The plugin will no longer associate a UUID with an IP address and use a timestamp instead to store when an entry should be removed.
+ - The expiration limit inside the config is now configured in minutes.
+ - The plugin will now check every 10 minutes instead of every hour for expired addresses.
 
 **Fixes**
 
