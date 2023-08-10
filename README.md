@@ -12,7 +12,7 @@ With PrivateStatus you can hide the online status of your server from unwanted p
 
 ## Configuration
 
-The configuration is in `plugins/PrivateStatus/config.yml` and looks like this. Please only edit the `expiration-minutes` option. The `known-addresses` section is managed by the plugin itself. The option `expiration-minutes` defines how long an address should be kept in the history. This period is checked every 10 minutes and relevant entries are removed.
+The configuration is in `plugins/PrivateStatus/config.yml` and looks like this. Please only edit the `expiration-minutes` option. The `known-addresses` section is managed by the plugin itself. The option `expiration-minutes` defines how long an address should be kept in the history. The plugin automatically checks every 10 minutes if entries expired. If so, it removes them.
 
 ```yaml
 # The amount of minutes after which addresses will expire. Minimum: 10.
