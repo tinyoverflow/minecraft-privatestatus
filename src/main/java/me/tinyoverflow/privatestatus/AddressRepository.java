@@ -9,7 +9,8 @@ import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class AddressRepository
@@ -27,7 +28,7 @@ public class AddressRepository
     /**
      * Loads data from a map consisting of the UUID string as the key and the base64 encoded address as the value.
      *
-     * @param configMap
+     * @param configMap Map of key => value pairs from the configuration file.
      */
     public void fromMap(@NotNull Map<String, Object> configMap)
     {
@@ -35,18 +36,16 @@ public class AddressRepository
         storage.clear();
 
         // Process each and every item inside the section.
-        for (Map.Entry<String, Object> entry : configMap.entrySet())
-        {
+        for (Map.Entry<String, Object> entry : configMap.entrySet()) {
             String address = entry.getKey();
             LocalDateTime expiration = LocalDateTime.ofEpochSecond((Long) entry.getValue(), 0, zoneOffset);
 
             // Decode the stored address and add it to the repository.
-            try
-            {
+            try {
                 InetAddress inetAddress = InetAddress.getByName(address);
                 storage.put(inetAddress, expiration);
-            } catch (UnknownHostException e)
-            {
+            }
+            catch (UnknownHostException e) {
                 logger.warning("Unknown host found in config. Skipping: " + address);
             }
         }
@@ -64,8 +63,7 @@ public class AddressRepository
     {
         Map<String, Long> addressList = new HashMap<>();
 
-        for (Map.Entry<InetAddress, LocalDateTime> entry : storage.entrySet())
-        {
+        for (Map.Entry<InetAddress, LocalDateTime> entry : storage.entrySet()) {
             InetAddress inetAddress = entry.getKey();
             LocalDateTime localDateTime = entry.getValue();
 
@@ -83,24 +81,24 @@ public class AddressRepository
      */
     public boolean hasAddress(InetAddress inetAddress)
     {
-        return storage.containsValue(inetAddress);
+        return storage.containsKey(inetAddress);
     }
 
     /**
      * Remembers a player and the address that belongs to it.
      *
-     * @param inetAddress   The address to associate with that player.
+     * @param inetAddress The address to associate with that player.
      */
     public void add(OfflinePlayer player, InetAddress inetAddress, LocalDateTime expiration)
     {
         AddAddressEvent event = new AddAddressEvent(player, inetAddress, expiration);
-        if (event.callEvent())
-        {
+        if (event.callEvent()) {
             storage.put(inetAddress, expiration);
         }
     }
 
-    public Map<InetAddress, LocalDateTime> getAll() {
+    public Map<InetAddress, LocalDateTime> getAll()
+    {
         return storage;
     }
 
