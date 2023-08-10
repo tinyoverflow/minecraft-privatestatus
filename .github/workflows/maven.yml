@@ -69,7 +69,7 @@ jobs:
           game-versions: ">=1.20"
           java: 17
 
-          files: "privatestatus*.jar"
+          files: "target/privatestatus*.jar"
 
           github-tag: ${{ github.ref_name }}
           github-token: ${{ github.token }}
