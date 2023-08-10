@@ -3,6 +3,10 @@ package me.tinyoverflow.privatestatus.jobs;
 import me.tinyoverflow.privatestatus.AddressRepository;
 import org.bukkit.OfflinePlayer;
 
+import java.net.InetAddress;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -23,13 +27,16 @@ public class PruneExpiredAddressesJob implements Runnable
         logger.fine("Pruning expired addresses...");
         int removedAddresses = 0;
 
-        Set<OfflinePlayer> offlinePlayerList = repository.getPlayers();
-        for (OfflinePlayer offlinePlayer : offlinePlayerList)
+        Map<InetAddress, LocalDateTime> addresses = repository.getAll();
+        for (Map.Entry<InetAddress, LocalDateTime> entry : addresses.entrySet())
         {
-            if (!repository.isExpired(offlinePlayer)) continue;
+            InetAddress address = entry.getKey();
+            LocalDateTime expiration = entry.getValue();
 
-            repository.remove(offlinePlayer);
-            removedAddresses++;
+            if (expiration.isBefore(LocalDateTime.now())) {
+                repository.remove(address);
+                removedAddresses++;
+            }
         }
 
         logger.fine("Pruning completed. Removed " + removedAddresses + " expired addresses.");

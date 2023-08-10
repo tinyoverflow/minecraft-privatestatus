@@ -1,24 +1,27 @@
 package me.tinyoverflow.privatestatus;
 
 import me.tinyoverflow.privatestatus.events.AddAddressEvent;
-import me.tinyoverflow.privatestatus.events.ExpireAddressEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class AddressRepository
 {
     private final Logger logger;
-    private final HashMap<OfflinePlayer, InetAddress> storage = new HashMap<>();
+    private final HashMap<InetAddress, LocalDateTime> storage = new HashMap<>();
+    private final ZoneOffset zoneOffset;
 
     public AddressRepository(Logger logger)
     {
         this.logger = logger;
+        this.zoneOffset = OffsetDateTime.now().getOffset();
     }
 
     /**
@@ -34,25 +37,17 @@ public class AddressRepository
         // Process each and every item inside the section.
         for (Map.Entry<String, Object> entry : configMap.entrySet())
         {
-            UUID uuid = UUID.fromString(entry.getKey());
-            String encodedAddress = (String) entry.getValue();
-
-            // Fire the expiration event to allow other listeners to intercept the expiration logic.
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-            if (isExpired(offlinePlayer))
-            {
-                logger.info("Skipping expired address for " + uuid);
-                continue;
-            }
+            String address = entry.getKey();
+            LocalDateTime expiration = LocalDateTime.ofEpochSecond((Long) entry.getValue(), 0, zoneOffset);
 
             // Decode the stored address and add it to the repository.
             try
             {
-                InetAddress inetAddress = InetAddress.getByAddress(Base64.getDecoder().decode(encodedAddress));
-                storage.put(offlinePlayer, inetAddress);
+                InetAddress inetAddress = InetAddress.getByName(address);
+                storage.put(inetAddress, expiration);
             } catch (UnknownHostException e)
             {
-                logger.warning("Unknown host found in config. Skipping: " + encodedAddress);
+                logger.warning("Unknown host found in config. Skipping: " + address);
             }
         }
 
@@ -65,16 +60,16 @@ public class AddressRepository
      *
      * @return The map with the UUID string as the key and the base64 encoded address as the value.
      */
-    public Map<String, String> toMap()
+    public Map<String, Long> toMap()
     {
-        Map<String, String> addressList = new HashMap<>();
+        Map<String, Long> addressList = new HashMap<>();
 
-        for (Map.Entry<OfflinePlayer, InetAddress> entry : storage.entrySet())
+        for (Map.Entry<InetAddress, LocalDateTime> entry : storage.entrySet())
         {
-            UUID uuid = entry.getKey().getUniqueId();
-            InetAddress inetAddress = entry.getValue();
+            InetAddress inetAddress = entry.getKey();
+            LocalDateTime localDateTime = entry.getValue();
 
-            addressList.put(uuid.toString(), Base64.getEncoder().encodeToString(inetAddress.getAddress()));
+            addressList.put(inetAddress.getHostAddress(), localDateTime.toEpochSecond(zoneOffset));
         }
 
         return addressList;
@@ -94,37 +89,23 @@ public class AddressRepository
     /**
      * Remembers a player and the address that belongs to it.
      *
-     * @param offlinePlayer The player to remember.
      * @param inetAddress   The address to associate with that player.
      */
-    public void add(OfflinePlayer offlinePlayer, InetAddress inetAddress)
+    public void add(OfflinePlayer player, InetAddress inetAddress, LocalDateTime expiration)
     {
-        AddAddressEvent event = new AddAddressEvent(offlinePlayer, inetAddress);
+        AddAddressEvent event = new AddAddressEvent(player, inetAddress, expiration);
         if (event.callEvent())
         {
-            storage.put(offlinePlayer, inetAddress);
+            storage.put(inetAddress, expiration);
         }
     }
 
-    /**
-     * Triggers the event call to check whether the entry is expired.
-     *
-     * @param offlinePlayer The {@code OfflinePlayer} to check for.
-     * @return {@code true} if the entry is expired, {@code false} otherwise.
-     */
-    public boolean isExpired(OfflinePlayer offlinePlayer)
-    {
-        ExpireAddressEvent event = new ExpireAddressEvent(offlinePlayer);
-        return event.callEvent();
+    public Map<InetAddress, LocalDateTime> getAll() {
+        return storage;
     }
 
-    public Set<OfflinePlayer> getPlayers()
+    public void remove(InetAddress address)
     {
-        return storage.keySet();
-    }
-
-    public void remove(OfflinePlayer player)
-    {
-        storage.remove(player);
+        storage.remove(address);
     }
 }

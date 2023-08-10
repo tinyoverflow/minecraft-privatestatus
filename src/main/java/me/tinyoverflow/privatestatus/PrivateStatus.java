@@ -1,7 +1,6 @@
 package me.tinyoverflow.privatestatus;
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
-import me.tinyoverflow.privatestatus.events.ExpireAddressEvent;
 import me.tinyoverflow.privatestatus.jobs.PruneExpiredAddressesJob;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -13,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +73,7 @@ public class PrivateStatus extends JavaPlugin implements Listener
                 this,
                 new PruneExpiredAddressesJob(getLogger(), repository),
                 0,
-                60 * 60 * 20
+                10 * 60 * 20
         );
     }
 
@@ -104,7 +104,8 @@ public class PrivateStatus extends JavaPlugin implements Listener
             return;
         }
 
-        repository.add(player, address);
+        LocalDateTime expiration = LocalDateTime.now().plusDays(getConfig().getInt(CONFIG_EXPIRATION_DAYS));
+        repository.add(player, address, expiration);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -114,14 +115,5 @@ public class PrivateStatus extends JavaPlugin implements Listener
         {
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onExpireAddressEvent(ExpireAddressEvent event)
-    {
-        int expirationDays = getConfig().getInt(CONFIG_EXPIRATION_DAYS);
-        long expirationDeadline = new Date().getTime() - expirationDays * 86400000L;
-
-        event.setCancelled(event.getPlayer().getLastLogin() >= expirationDeadline);
     }
 }
