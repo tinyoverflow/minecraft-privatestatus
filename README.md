@@ -16,7 +16,7 @@ The configuration is in `plugins/PrivateStatus/config.yml` and looks like this. 
 
 ```yaml
 # The amount of minutes after which addresses will expire. Minimum: 10.
-expiration-minutes: 3
+expiration-minutes: 1440
 
 # A list of already known addresses.
 known-addresses: {}

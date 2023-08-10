@@ -34,7 +34,7 @@ public class PrivateStatus extends JavaPlugin implements Listener
         // Set sensible configuration defaults.
         getConfig().options().copyDefaults(true);
 
-        getConfig().addDefault(CONFIG_EXPIRATION_MINUTES, 3);
+        getConfig().addDefault(CONFIG_EXPIRATION_MINUTES, 1440);
         getConfig().setComments(
                 CONFIG_EXPIRATION_MINUTES,
                 List.of("The amount of minutes after which addresses will expire. Minimum: 10.")
