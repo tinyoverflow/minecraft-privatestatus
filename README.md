@@ -8,15 +8,15 @@
 ![Modrinth Downloads](https://img.shields.io/modrinth/dt/15lfFvuG?style=flat-square&logo=modrinth&label=Downloads)
 ![bStats Servers](https://img.shields.io/bstats/servers/19291?style=flat-square&label=Servers)
 
-With PrivateStatus you can hide the online status of your server from unwanted players. This is especially worthwhile for private servers with a whitelist to prevent this. This plugin only works on Paper 1.20+ and is not compatible with Spigot.
+With PrivateStatus you can hide the online status of your server from unwanted players. This is especially worthwhile for private servers with a whitelist to prevent this. This plugin only works on Paper 1.20+ and is not compatible with Spigot. This is because this plugin relies on the so called `ServerListPingEvent` which can only be cancelled when using Paper.
 
 ## Configuration
 
-The configuration is in `plugins/PrivateStatus/config.yml` and looks like this. Please edit only the `expiration-days` option. The `known-addresses` section is managed by the plugin itself. The option `expiration-days` defines how long an address should be kept in the history. This period is checked every hour and relevant entries are removed.
+The configuration is in `plugins/PrivateStatus/config.yml` and looks like this. Please only edit the `expiration-minutes` option. The `known-addresses` section is managed by the plugin itself. The option `expiration-minutes` defines how long an address should be kept in the history. This period is checked every 10 minutes and relevant entries are removed.
 
 ```yaml
-# The amount of days after which addresses will expire. Minimum: 1.
-expiration-days: 3
+# The amount of minutes after which addresses will expire. Minimum: 10.
+expiration-minutes: 3
 
 # A list of already known addresses.
 known-addresses: {}
