@@ -22,6 +22,10 @@ expiration-minutes: 1440
 known-addresses: {}
 ```
 
+## Video Example (YouTube)
+
+[![PrivateStatus Demo](http://img.youtube.com/vi/aRo1AMhukKs/maxresdefault.jpg)](https://youtu.be/aRo1AMhukKs)
+
 ## More
 
 - [View on GitHub](https://github.com/tinyoverflow/minecraft-privatestatus)
