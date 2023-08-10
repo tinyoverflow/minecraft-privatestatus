@@ -2,7 +2,6 @@ package me.tinyoverflow.privatestatus;
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import me.tinyoverflow.privatestatus.jobs.PruneExpiredAddressesJob;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,7 +12,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class PrivateStatus extends JavaPlugin implements Listener
@@ -45,6 +47,7 @@ public class PrivateStatus extends JavaPlugin implements Listener
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onEnable()
     {
         getServer().getPluginManager().registerEvents(this, this);
@@ -57,10 +60,10 @@ public class PrivateStatus extends JavaPlugin implements Listener
         // Load addresses from configuration file, if the section exists.
         List<?> data = getConfig().getList(CONFIG_KNOWN_ADDRESSES, new ArrayList<>());
         repository.fromList((List<Map<String, Object>>) data);
-//        ConfigurationSection configurationSection = getConfig().getConfigurationSection(CONFIG_KNOWN_ADDRESSES);
-//        if (configurationSection != null) {
-//            repository.fromMap(configurationSection.getValues(false));
-//        }
+        //        ConfigurationSection configurationSection = getConfig().getConfigurationSection(CONFIG_KNOWN_ADDRESSES);
+        //        if (configurationSection != null) {
+        //            repository.fromMap(configurationSection.getValues(false));
+        //        }
 
         // Initialize Metrics
         PrivateStatusMetrics metrics = new PrivateStatusMetrics(this, 19291);
