@@ -30,4 +30,5 @@ known-addresses: {}
 
 - [View on GitHub](https://github.com/tinyoverflow/minecraft-privatestatus)
 - [View on Modrinth](https://modrinth.com/plugin/privatestatus)
+- [View on Hangar](https://hangar.papermc.io/tinyoverflow/PrivateStatus)
 - [View on bStats](https://bstats.org/plugin/bukkit/PrivateStatus/19291)
