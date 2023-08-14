@@ -3,7 +3,7 @@
 ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/tinyoverflow/minecraft-privatestatus?style=flat-square&label=version)
 ![GitHub issues](https://img.shields.io/github/issues/tinyoverflow/minecraft-privatestatus?style=flat-square&label=issues)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tinyoverflow/minecraft-privatestatus/main?style=flat-square&label=updated)
-![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/tinyoverflow/minecraft-privatestatus/main?style=flat-square&logo=codefactor&label=quality)
+![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/tinyoverflow/minecraft-privatestatus/main?style=flat-square&label=codefactor)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/tinyoverflow/minecraft-privatestatus/maven.yml?style=flat-square&label=build)
 ![bStats Servers](https://img.shields.io/bstats/servers/19291?style=flat-square&label=servers)
 
