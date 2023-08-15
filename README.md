@@ -5,7 +5,7 @@
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tinyoverflow/minecraft-privatestatus/main?style=flat-square&label=updated)
 ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/tinyoverflow/minecraft-privatestatus/main?style=flat-square&label=codefactor)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/tinyoverflow/minecraft-privatestatus/maven.yml?style=flat-square&label=build)
-![bStats Servers](https://img.shields.io/bstats/servers/19291?style=flat-square&label=servers)
+[![bStats Servers](https://img.shields.io/bstats/servers/19291?style=flat-square&label=servers)][bstats-link]
 
 With PrivateStatus you can hide the online status of your server from unwanted players. This is especially worthwhile for private servers with a whitelist to prevent this. This plugin only works on Paper 1.20+ and is not compatible with Spigot. This is because this plugin relies on the so called `ServerListPingEvent` which can only be cancelled when using Paper.
 
@@ -27,7 +27,12 @@ known-addresses: {}
 
 ## More
 
-- [View on GitHub](https://github.com/tinyoverflow/minecraft-privatestatus)
-- [View on Modrinth](https://modrinth.com/plugin/privatestatus)
-- [View on Hangar](https://hangar.papermc.io/tinyoverflow/PrivateStatus)
-- [View on bStats](https://bstats.org/plugin/bukkit/PrivateStatus/19291)
+- [View on GitHub][github-link]
+- [View on Modrinth][modrinth-link]
+- [View on Hangar][hangar-link]
+- [View on bStats][bstats-link]
+
+[github-link]: https://github.com/tinyoverflow/minecraft-privatestatus
+[modrinth-link]: https://modrinth.com/plugin/privatestatus
+[hangar-link]: https://hangar.papermc.io/tinyoverflow/PrivateStatus
+[bstats-link]: https://bstats.org/plugin/bukkit/PrivateStatus/19291
